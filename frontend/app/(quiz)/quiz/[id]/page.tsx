@@ -152,7 +152,7 @@ export default function QuizPage({ params }: any) {
   return (
     <WebSocketProvider>
       <main className='flex min-w-full min-h-screen'>
-        <div className='flex flex-col w-full h-full space-y-4 flex-grow px-4 md:px-16 pt-8 pb-24 md:pb-8'>
+        <div className='flex flex-col w-full space-y-4 flex-grow px-4 md:px-16 py-8'>
           <div className='max-w-3xl mx-auto w-full'>
             <h1 className='text-2xl font-bold mb-4'>{currentQuiz.title}</h1>
 
@@ -176,7 +176,7 @@ export default function QuizPage({ params }: any) {
             </div>
 
             {isCompleted ? (
-              <div className='flex items-center justify-center min-h-[60vh]'>
+              <div className='flex items-center justify-center py-8'>
                 <div className='text-center p-8 bg-white rounded-lg shadow-lg w-full max-w-md'>
                   <h2 className='text-4xl font-bold text-green-600 mb-6'>
                     Congratulations! 🎉
@@ -215,8 +215,7 @@ export default function QuizPage({ params }: any) {
               </div>
             ) : (
               <>
-                {/* Video Stream */}
-                <div className='mb-6 flex justify-center items-center'>
+                <div className='mb-8 w-full'>
                   <VideoStream onPrediction={handlePrediction} />
                 </div>
 

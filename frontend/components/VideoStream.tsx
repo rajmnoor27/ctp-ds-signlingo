@@ -211,7 +211,7 @@ export default function VideoStream({ onPrediction }: VideoStreamProps) {
   };
 
   return (
-    <div className='relative w-fit'>
+    <div className='w-full'>
       <div className='flex flex-col items-center gap-2 mb-4'>
         {(error || wsError) && (
           <div className='text-red-500 bg-red-100 p-2 rounded mb-2'>
@@ -228,21 +228,17 @@ export default function VideoStream({ onPrediction }: VideoStreamProps) {
             : 'Camera active'}
         </div>
       </div>
-      <div className='relative w-[640px] h-[480px]'>
+      <div className='relative w-full max-w-[640px] mx-auto aspect-[4/3]'>
         <video
           ref={videoRef}
           autoPlay
           playsInline
-          width={640}
-          height={480}
-          onLoadedData={predictWebcam}
+          className='absolute top-0 left-0 w-full h-full object-cover'
           style={{ transform: 'rotateY(180deg)' }}
         />
         <canvas
           ref={canvasRef}
-          width={640}
-          height={480}
-          className='absolute top-0 left-0'
+          className='absolute top-0 left-0 w-full h-full'
           style={{ transform: 'rotateY(180deg)' }}
         />
         {prediction && (
