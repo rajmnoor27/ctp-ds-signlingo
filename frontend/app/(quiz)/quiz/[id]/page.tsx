@@ -151,125 +151,133 @@ export default function QuizPage({ params }: any) {
 
   return (
     <WebSocketProvider>
-      <div className='min-h-screen bg-gray-50 p-4 flex flex-col items-center'>
-        <h1 className='text-2xl font-bold'>{currentQuiz.title}</h1>
+      <main className='flex min-w-full min-h-screen'>
+        <div className='flex flex-col w-full h-full space-y-4 flex-grow px-4 md:px-16 pt-8 pb-24 md:pb-8'>
+          <div className='max-w-3xl mx-auto w-full'>
+            <h1 className='text-2xl font-bold mb-4'>{currentQuiz.title}</h1>
 
-        {/* Top bar with settings, progress, and hearts */}
-        <div className='flex items-center gap-4 mb-2 w-[75%]'>
-          <Settings className='w-6 h-6 text-gray-600' />
+            {/* Top bar with settings, progress, and hearts */}
+            <div className='flex items-center gap-4 mb-4'>
+              <Settings className='w-6 h-6 text-gray-600' />
 
-          <div className='flex-1'>
-            <div className='w-full bg-gray-200 rounded-full h-2.5'>
-              <div
-                className='bg-[#6BA6FF] h-2.5 rounded-full transition-all duration-300'
-                style={{ width: `${progress}%` }}
-              ></div>
+              <div className='flex-1'>
+                <div className='w-full bg-gray-200 rounded-full h-2.5'>
+                  <div
+                    className='bg-[#6BA6FF] h-2.5 rounded-full transition-all duration-300'
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              <div className='flex items-center gap-1'>
+                <Heart className='w-6 h-6 fill-red-500 text-red-500' />
+                <span className='font-bold'>5</span>
+              </div>
             </div>
-          </div>
 
-          <div className='flex items-center gap-1'>
-            <Heart className='w-6 h-6 fill-red-500 text-red-500' />
-            <span className='font-bold'>5</span>
+            {isCompleted ? (
+              <div className='flex items-center justify-center min-h-[60vh]'>
+                <div className='text-center p-8 bg-white rounded-lg shadow-lg w-full max-w-md'>
+                  <h2 className='text-4xl font-bold text-green-600 mb-6'>
+                    Congratulations! 🎉
+                  </h2>
+                  <div className='flex gap-4 justify-center mb-8 flex-wrap'>
+                    {currentQuiz.letters.map((letter) => (
+                      <div
+                        key={letter}
+                        className='w-12 h-12 flex items-center justify-center bg-green-100 rounded-lg border-2 border-green-500'
+                      >
+                        <p className='text-xl font-bold text-green-700'>
+                          {letter}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  <p className='text-xl text-gray-700 mb-8'>
+                    You've mastered all {currentQuiz.letters.length} letters in
+                    this quiz!
+                  </p>
+                  <div className='flex flex-col md:flex-row gap-4 justify-center w-full'>
+                    <button
+                      onClick={() => window.location.reload()}
+                      className='w-full py-6 text-lg bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors'
+                    >
+                      Try Again
+                    </button>
+                    <button
+                      onClick={() => (window.location.href = '/quiz')}
+                      className='w-full py-6 text-lg bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors'
+                    >
+                      Next Quiz
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Video Stream */}
+                <div className='mb-6 flex justify-center items-center'>
+                  <VideoStream onPrediction={handlePrediction} />
+                </div>
+
+                {/* Current Letter Indicator */}
+                <div className='mb-4 text-center'>
+                  <p className='text-gray-600 mb-2'>Sign this letter:</p>
+                  <div className='text-4xl font-bold text-blue-600'>
+                    {expectedLetter}
+                    {holdStartTime && !isTransitioning && (
+                      <div className='text-lg text-green-600 mt-2'>
+                        {timeRemaining.toFixed(1)}s remaining
+                      </div>
+                    )}
+                  </div>
+                  {/* Last Prediction Feedback */}
+                  {lastPrediction && (
+                    <div
+                      className={`mt-2 text-lg ${
+                        lastPrediction.letter === expectedLetter
+                          ? 'text-green-600'
+                          : 'text-gray-600'
+                      }`}
+                    >
+                      Detected: {lastPrediction.letter}
+                      <span className='text-sm ml-2'>
+                        ({(lastPrediction.confidence * 100).toFixed(1)}%)
+                      </span>
+                    </div>
+                  )}
+                  {/* Transition Indicator */}
+                  {isTransitioning && (
+                    <div className='mt-2 text-green-600 animate-pulse'>
+                      Great job! Get ready for the next letter...
+                    </div>
+                  )}
+                </div>
+
+                {/* Letter Progress */}
+                <div className='flex gap-4 justify-center flex-wrap'>
+                  {currentQuiz.letters.map((letter, index) => (
+                    <div
+                      key={letter}
+                      className={`w-16 h-16 flex items-center justify-center rounded-lg shadow-md transition-all duration-300 ${
+                        index === currentLetterIndex
+                          ? 'bg-blue-100 border-2 border-blue-500 scale-110'
+                          : index < currentLetterIndex
+                          ? 'bg-green-100 border-2 border-green-500'
+                          : 'bg-white border-2 border-blue-200'
+                      }`}
+                    >
+                      <p className='text-2xl font-bold text-gray-700'>
+                        {letter}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
-
-        {isCompleted ? (
-          <div className='flex items-center justify-center min-h-[calc(100vh-200px)]'>
-            <div className='text-center p-8 bg-white rounded-lg shadow-lg'>
-              <h2 className='text-4xl font-bold text-green-600 mb-6'>
-                Congratulations! 🎉
-              </h2>
-              <div className='flex gap-4 justify-center mb-8'>
-                {currentQuiz.letters.map((letter) => (
-                  <div
-                    key={letter}
-                    className='w-12 h-12 flex items-center justify-center bg-green-100 rounded-lg border-2 border-green-500'
-                  >
-                    <p className='text-xl font-bold text-green-700'>{letter}</p>
-                  </div>
-                ))}
-              </div>
-              <p className='text-xl text-gray-700 mb-8'>
-                You've mastered all {currentQuiz.letters.length} letters in this
-                quiz!
-              </p>
-              <div className='flex gap-4 justify-center'>
-                <button
-                  onClick={() => window.location.reload()}
-                  className='px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors'
-                >
-                  Try Again
-                </button>
-                <button
-                  onClick={() => (window.location.href = '/quiz')}
-                  className='px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors'
-                >
-                  Next Quiz
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <>
-            {/* Video Stream */}
-            <div className='mb-6'>
-              <VideoStream onPrediction={handlePrediction} />
-            </div>
-
-            {/* Current Letter Indicator */}
-            <div className='mb-4 text-center'>
-              <p className='text-gray-600 mb-2'>Sign this letter:</p>
-              <div className='text-4xl font-bold text-blue-600'>
-                {expectedLetter}
-                {holdStartTime && !isTransitioning && (
-                  <div className='text-lg text-green-600 mt-2'>
-                    {timeRemaining.toFixed(1)}s remaining
-                  </div>
-                )}
-              </div>
-              {/* Last Prediction Feedback */}
-              {lastPrediction && (
-                <div
-                  className={`mt-2 text-lg ${
-                    lastPrediction.letter === expectedLetter
-                      ? 'text-green-600'
-                      : 'text-gray-600'
-                  }`}
-                >
-                  Detected: {lastPrediction.letter}
-                  <span className='text-sm ml-2'>
-                    ({(lastPrediction.confidence * 100).toFixed(1)}%)
-                  </span>
-                </div>
-              )}
-              {/* Transition Indicator */}
-              {isTransitioning && (
-                <div className='mt-2 text-green-600 animate-pulse'>
-                  Great job! Get ready for the next letter...
-                </div>
-              )}
-            </div>
-
-            {/* Letter Progress */}
-            <div className='flex gap-4 justify-center'>
-              {currentQuiz.letters.map((letter, index) => (
-                <div
-                  key={letter}
-                  className={`w-16 h-16 flex items-center justify-center rounded-lg shadow-md transition-all duration-300 ${
-                    index === currentLetterIndex
-                      ? 'bg-blue-100 border-2 border-blue-500 scale-110'
-                      : index < currentLetterIndex
-                      ? 'bg-green-100 border-2 border-green-500'
-                      : 'bg-white border-2 border-blue-200'
-                  }`}
-                >
-                  <p className='text-2xl font-bold text-gray-700'>{letter}</p>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
+      </main>
     </WebSocketProvider>
   );
 }

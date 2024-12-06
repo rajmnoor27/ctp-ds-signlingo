@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Nunito } from 'next/font/google';
 import './globals.css';
 import SideNav from '@/components/SideNav';
+import MobileNav from '@/components/MobileNav';
 
 const nunito = Nunito({ subsets: ['latin'] });
 
@@ -18,10 +19,15 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={nunito.className}>
-        <main className='flex min-h-screen min-w-full'>
+        <div className='flex min-h-screen relative'>
           <SideNav />
-          <div className='flex-1'>{children}</div>
-        </main>
+
+          {/* Main Content */}
+          <div className='flex-1 p-4 md:p-8 pb-24 md:pb-8'>{children}</div>
+
+          {/* Mobile Navigation */}
+          <MobileNav />
+        </div>
       </body>
     </html>
   );

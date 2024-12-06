@@ -1,87 +1,82 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-// import homeIcon from "/homeIcon.svg";
 
 export default function SideNav() {
   const pathname = usePathname();
 
   return (
-    <div className='flex left-0 top-0 h-screen'>
-      <div className='h-screen flex flex-col border-r border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-gray-950 p-4 min-w-[256px]'>
-        {/* logo */}
-        <Link className='flex items-center py-8 pl-4' href='/'>
-          <h2 className='font-feather-bold text-4xl text-[#6BA6FF]'>
-            signlingo
-          </h2>
-        </Link>
+    <div className='hidden md:flex h-screen flex-col border-r border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-gray-950 p-4 min-w-[256px]'>
+      {/* logo */}
+      <Link className='flex items-center py-8 pl-4' href='/'>
+        <h2 className='font-feather-bold text-4xl text-[#6BA6FF]'>signlingo</h2>
+      </Link>
 
-        <nav className='flex flex-col'>
-          <ul className='flex flex-col gap-2'>
-            {/* home */}
-            <Link href='/lesson'>
-              <li
-                className={`flex rounded-[12px] px-2 py-1 min-h-[40px] ${
-                  pathname === '/lesson'
-                    ? 'bg-iguana border-blue-jay text-macaw border-2'
-                    : 'text-wolf hover:bg-hover'
-                }`}
-              >
-                <div className='flex mr-[20px] w-[36px] h-[36px]'>
-                  <HomeIcon className='pl-[6px] w-[36px] h-[36px]' />
-                </div>
-                <span className='flex items-center font-din-rounded font-bold text-[15px] tracking-[0.8px]'>
-                  LEARN
-                </span>
-              </li>
-            </Link>
-            {/* practice */}
-            <Link href='/quiz'>
-              <li
-                className={`flex rounded-[12px] px-2 py-1 min-h-[40px] ${
-                  pathname === '/quiz'
-                    ? 'bg-iguana border-blue-jay text-macaw border-2'
-                    : 'text-wolf hover:bg-hover'
-                }`}
-              >
-                <div className='flex mr-[20px] w-[36px] h-[36px]'>
-                  <PracticeIcon className='pl-[6px] w-[36px] h-[36px]' />
-                </div>
-                <span className='flex items-center font-din-rounded font-bold text-[15px] tracking-[0.8px]'>
-                  PRACTICE
-                </span>
-              </li>
-            </Link>
-            {/* Leaderboard */}
-            <li className='flex rounded-[12px] text-wolf px-2 py-1 min-h-[40px] hover:bg-hover'>
+      <nav className='flex flex-col'>
+        <ul className='flex flex-col gap-2'>
+          {/* home */}
+          <Link href='/lesson'>
+            <li
+              className={`flex rounded-[12px] px-2 py-1 min-h-[40px] ${
+                pathname === '/lesson'
+                  ? 'bg-iguana border-blue-jay text-macaw border-2'
+                  : 'text-wolf hover:bg-hover'
+              }`}
+            >
               <div className='flex mr-[20px] w-[36px] h-[36px]'>
-                <LeaderboardIcon className='pl-[6px] w-[36px] h-[36px]' />
+                <HomeIcon className='pl-[6px] w-[36px] h-[36px]' />
               </div>
               <span className='flex items-center font-din-rounded font-bold text-[15px] tracking-[0.8px]'>
-                LEADERBOARD
+                LEARN
               </span>
             </li>
-            {/* Shop */}
-            <li className='flex rounded-[12px] text-wolf px-2 py-1 min-h-[40px] hover:bg-hover'>
+          </Link>
+          {/* practice */}
+          <Link href='/quiz'>
+            <li
+              className={`flex rounded-[12px] px-2 py-1 min-h-[40px] ${
+                pathname === '/quiz'
+                  ? 'bg-iguana border-blue-jay text-macaw border-2'
+                  : 'text-wolf hover:bg-hover'
+              }`}
+            >
               <div className='flex mr-[20px] w-[36px] h-[36px]'>
-                <ShopIcon className='pl-[6px] w-[36px] h-[36px]' />
+                <PracticeIcon className='pl-[6px] w-[36px] h-[36px]' />
               </div>
               <span className='flex items-center font-din-rounded font-bold text-[15px] tracking-[0.8px]'>
-                SHOP
+                PRACTICE
               </span>
             </li>
-            {/* Settings */}
-            <li className='flex rounded-[12px] text-wolf px-2 py-1 min-h-[40px] hover:bg-hover'>
-              <div className='flex mr-[20px] w-[36px] h-[36px]'>
-                <SettingsIcon className='pl-[6px] w-[36px] h-[36px]' />
-              </div>
-              <span className='flex items-center font-din-rounded font-bold text-[15px] tracking-[0.8px]'>
-                LOG OUT
-              </span>
-            </li>
-          </ul>
-        </nav>
-      </div>
+          </Link>
+          {/* Leaderboard - Disabled */}
+          <li className='flex rounded-[12px] text-wolf px-2 py-1 min-h-[40px] opacity-50 cursor-not-allowed'>
+            <div className='flex mr-[20px] w-[36px] h-[36px]'>
+              <LeaderboardIcon className='pl-[6px] w-[36px] h-[36px]' />
+            </div>
+            <span className='flex items-center font-din-rounded font-bold text-[15px] tracking-[0.8px]'>
+              LEADERBOARD
+            </span>
+          </li>
+          {/* Shop - Disabled */}
+          <li className='flex rounded-[12px] text-wolf px-2 py-1 min-h-[40px] opacity-50 cursor-not-allowed'>
+            <div className='flex mr-[20px] w-[36px] h-[36px]'>
+              <ShopIcon className='pl-[6px] w-[36px] h-[36px]' />
+            </div>
+            <span className='flex items-center font-din-rounded font-bold text-[15px] tracking-[0.8px]'>
+              SHOP
+            </span>
+          </li>
+          {/* Settings - Disabled */}
+          <li className='flex rounded-[12px] text-wolf px-2 py-1 min-h-[40px] opacity-50 cursor-not-allowed'>
+            <div className='flex mr-[20px] w-[36px] h-[36px]'>
+              <SettingsIcon className='pl-[6px] w-[36px] h-[36px]' />
+            </div>
+            <span className='flex items-center font-din-rounded font-bold text-[15px] tracking-[0.8px]'>
+              PROFILE
+            </span>
+          </li>
+        </ul>
+      </nav>
     </div>
   );
 }
