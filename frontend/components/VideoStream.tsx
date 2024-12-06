@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { HandLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 import { HAND_CONNECTIONS } from '@mediapipe/hands';
+import { useWebSocket } from '@/contexts/WebSocketContext';
 
 interface VideoStreamProps {
   onPrediction?: (prediction: string, confidence: number) => void;
@@ -54,91 +55,21 @@ const drawCustomConnectors = (
 export default function VideoStream({ onPrediction }: VideoStreamProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
   const [handLandmarker, setHandLandmarker] = useState<any>(null);
   const [webcamRunning, setWebcamRunning] = useState(false);
   const [prediction, setPrediction] = useState<{
     prediction: string | null;
     confidence: number;
   } | null>(null);
-  const [isWsConnected, setIsWsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const connectWebSocket = useCallback(() => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) {
-      console.log('WebSocket already connected');
-      return;
-    }
-
-    // Clear any existing reconnection timeout
-    if (reconnectTimeoutRef.current) {
-      clearTimeout(reconnectTimeoutRef.current);
-    }
-
-    console.log('Creating new WebSocket connection...');
-    const ws = new WebSocket('ws://localhost:8000/ws');
-
-    ws.onopen = () => {
-      console.log('WebSocket connected successfully');
-      setIsWsConnected(true);
-      setError(null);
-    };
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data.error) {
-          console.error('Prediction error:', data.error);
-          setError(data.error);
-        } else {
-          console.log('Received prediction:', data);
-          setPrediction(data);
-          if (onPrediction && data.prediction) {
-            onPrediction(data.prediction, data.confidence);
-          }
-        }
-      } catch (err) {
-        console.error('Error parsing WebSocket message:', err);
-      }
-    };
-
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-      setError('Failed to connect to the server. Please try again.');
-      setIsWsConnected(false);
-    };
-
-    ws.onclose = (event) => {
-      console.log('WebSocket connection closed:', event.code, event.reason);
-      setIsWsConnected(false);
-      wsRef.current = null;
-
-      reconnectTimeoutRef.current = setTimeout(() => {
-        console.log('Attempting to reconnect...');
-        connectWebSocket();
-      }, 100);
-    };
-
-    wsRef.current = ws;
-  }, [onPrediction]);
-
-  // Initialize WebSocket connection
-  useEffect(() => {
-    console.log('Initial WebSocket setup...');
-    connectWebSocket();
-
-    return () => {
-      console.log('Cleaning up WebSocket connection...');
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
-      if (wsRef.current) {
-        wsRef.current.close();
-        wsRef.current = null;
-      }
-    };
-  }, [connectWebSocket]);
+  // Use the WebSocket context
+  const {
+    isConnected,
+    error: wsError,
+    sendMessage,
+    setMessageHandler,
+  } = useWebSocket();
 
   useEffect(() => {
     const initHandLandmarker = async () => {
@@ -161,32 +92,23 @@ export default function VideoStream({ onPrediction }: VideoStreamProps) {
     initHandLandmarker();
   }, []);
 
-  // Add cleanup function for camera
-  const stopCamera = useCallback(() => {
-    if (videoRef.current && videoRef.current.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach((track) => track.stop());
-      videoRef.current.srcObject = null;
-    }
-    setWebcamRunning(false);
-  }, []);
-
-  // Cleanup when component unmounts
+  // Set up message handler for predictions
   useEffect(() => {
-    return () => {
-      stopCamera();
-      if (wsRef.current) {
-        wsRef.current.close();
-        wsRef.current = null;
+    setMessageHandler((data) => {
+      if (data.error) {
+        console.error('Prediction error:', data.error);
+        setError(data.error);
+      } else {
+        setPrediction(data);
+        if (onPrediction && data.prediction) {
+          onPrediction(data.prediction, data.confidence);
+        }
       }
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
-    };
-  }, [stopCamera]);
+    });
+  }, [setMessageHandler, onPrediction]);
 
   const enableCam = async () => {
-    if (!handLandmarker || !isWsConnected) {
+    if (!handLandmarker || !isConnected) {
       setError('Please wait for the system to initialize...');
       return;
     }
@@ -230,17 +152,8 @@ export default function VideoStream({ onPrediction }: VideoStreamProps) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (results.landmarks && results.landmarks.length > 0) {
-      if (wsRef.current?.readyState === WebSocket.OPEN) {
-        try {
-          wsRef.current.send(JSON.stringify(results.landmarks));
-        } catch (err) {
-          console.error('Error sending landmarks:', err);
-          // If we get an error sending, attempt to reconnect
-          if (wsRef.current) {
-            wsRef.current.close();
-          }
-        }
-      }
+      // Send landmarks through WebSocket
+      sendMessage(results.landmarks);
 
       for (const landmarks of results.landmarks) {
         drawCustomConnectors(ctx, landmarks, HAND_CONNECTIONS, {
@@ -270,22 +183,22 @@ export default function VideoStream({ onPrediction }: VideoStreamProps) {
 
   // Add a new effect to automatically start the camera when ready
   useEffect(() => {
-    if (isWsConnected && handLandmarker && !webcamRunning) {
+    if (isConnected && handLandmarker && !webcamRunning) {
       console.log('System ready, starting camera automatically...');
       enableCam();
     }
-  }, [isWsConnected, handLandmarker]);
+  }, [isConnected, handLandmarker]);
 
   return (
     <div className='relative w-fit'>
       <div className='flex flex-col items-center gap-2 mb-4'>
-        {error && (
+        {(error || wsError) && (
           <div className='text-red-500 bg-red-100 p-2 rounded mb-2'>
-            {error}
+            {error || wsError}
           </div>
         )}
         <div className='text-md text-gray-600'>
-          {!isWsConnected
+          {!isConnected
             ? 'Connecting to server...'
             : !handLandmarker
             ? 'Loading hand detection...'
