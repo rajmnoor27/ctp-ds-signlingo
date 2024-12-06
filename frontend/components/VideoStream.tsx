@@ -228,7 +228,7 @@ export default function VideoStream({ onPrediction }: VideoStreamProps) {
             : 'Camera active'}
         </div>
       </div>
-      <div className='relative w-full max-w-[640px] mx-auto aspect-[4/3]'>
+      <div className='relative w-full max-w-[640px] mx-auto aspect-[4/3] overflow-hidden'>
         <video
           ref={videoRef}
           autoPlay
@@ -238,7 +238,7 @@ export default function VideoStream({ onPrediction }: VideoStreamProps) {
         />
         <canvas
           ref={canvasRef}
-          className='absolute top-0 left-0 w-full h-full'
+          className='absolute top-0 left-0 w-full h-full object-cover'
           style={{ transform: 'rotateY(180deg)' }}
         />
         {prediction && (
