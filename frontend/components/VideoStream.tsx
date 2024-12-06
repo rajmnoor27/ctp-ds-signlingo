@@ -9,6 +9,16 @@ interface VideoStreamProps {
   onPrediction?: (prediction: string, confidence: number) => void;
 }
 
+const FRAME_RATE = 10; // Reduced from 10 for lower resource usage
+const FRAME_INTERVAL = 1000 / FRAME_RATE;
+
+// Add video constraints for lower resolution
+const VIDEO_CONSTRAINTS = {
+  width: { ideal: 640 }, // Back to original size
+  height: { ideal: 480 }, // Back to original size
+  frameRate: { max: FRAME_RATE },
+};
+
 const drawCustomLandmarks = (
   ctx: CanvasRenderingContext2D,
   landmarks: any[],
@@ -62,6 +72,7 @@ export default function VideoStream({ onPrediction }: VideoStreamProps) {
     confidence: number;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const lastProcessedTime = useRef<number>(0);
 
   // Use the WebSocket context
   const {
@@ -70,6 +81,21 @@ export default function VideoStream({ onPrediction }: VideoStreamProps) {
     sendMessage,
     setMessageHandler,
   } = useWebSocket();
+
+  useEffect(() => {
+    // Set up message handler for predictions
+    setMessageHandler((data) => {
+      if (data.error) {
+        console.error('Prediction error:', data.error);
+        setError(data.error);
+      } else {
+        setPrediction(data);
+        if (onPrediction && data.prediction) {
+          onPrediction(data.prediction, data.confidence);
+        }
+      }
+    });
+  }, [setMessageHandler, onPrediction]);
 
   useEffect(() => {
     const initHandLandmarker = async () => {
@@ -92,43 +118,15 @@ export default function VideoStream({ onPrediction }: VideoStreamProps) {
     initHandLandmarker();
   }, []);
 
-  // Set up message handler for predictions
-  useEffect(() => {
-    setMessageHandler((data) => {
-      if (data.error) {
-        console.error('Prediction error:', data.error);
-        setError(data.error);
-      } else {
-        setPrediction(data);
-        if (onPrediction && data.prediction) {
-          onPrediction(data.prediction, data.confidence);
-        }
-      }
-    });
-  }, [setMessageHandler, onPrediction]);
-
-  const enableCam = async () => {
-    if (!handLandmarker || !isConnected) {
-      setError('Please wait for the system to initialize...');
-      return;
-    }
-
-    try {
-      const constraints = { video: true };
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        setWebcamRunning(true);
-        setError(null);
-      }
-    } catch (err) {
-      setError('Failed to access camera. Please check permissions.');
-      console.error('Camera access error:', err);
-    }
-  };
-
   const predictWebcam = async () => {
     if (!videoRef.current || !canvasRef.current || !handLandmarker) return;
+
+    const currentTime = performance.now();
+    // Check if enough time has passed since last processing
+    if (currentTime - lastProcessedTime.current < FRAME_INTERVAL) {
+      requestAnimationFrame(predictWebcam);
+      return;
+    }
 
     const video = videoRef.current;
     const canvas = canvasRef.current;
@@ -152,8 +150,9 @@ export default function VideoStream({ onPrediction }: VideoStreamProps) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (results.landmarks && results.landmarks.length > 0) {
-      // Send landmarks through WebSocket
+      // Send landmarks through WebSocket with rate limiting
       sendMessage(results.landmarks);
+      lastProcessedTime.current = currentTime;
 
       for (const landmarks of results.landmarks) {
         drawCustomConnectors(ctx, landmarks, HAND_CONNECTIONS, {
@@ -188,6 +187,28 @@ export default function VideoStream({ onPrediction }: VideoStreamProps) {
       enableCam();
     }
   }, [isConnected, handLandmarker]);
+
+  const enableCam = async () => {
+    if (!handLandmarker || !isConnected) {
+      setError('Please wait for the system to initialize...');
+      return;
+    }
+
+    try {
+      const constraints = {
+        video: VIDEO_CONSTRAINTS,
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        setWebcamRunning(true);
+        setError(null);
+      }
+    } catch (err) {
+      setError('Failed to access camera. Please check permissions.');
+      console.error('Camera access error:', err);
+    }
+  };
 
   return (
     <div className='relative w-fit'>
