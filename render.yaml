@@ -3,7 +3,7 @@ services:
   - type: web
     name: signlingo-backend
     env: python
-    region: oregon
+    region: virginia
     plan: free
     branch: main
     rootDir: backend
@@ -24,7 +24,7 @@ services:
   - type: web
     name: signlingo-frontend
     env: node
-    region: oregon
+    region: virginia
     plan: free
     branch: main
     rootDir: frontend
