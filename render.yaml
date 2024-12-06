@@ -1,3 +1,4 @@
+name: signlingo
 services:
   # Backend Service
   - type: web
