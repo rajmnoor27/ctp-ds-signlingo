@@ -16,26 +16,26 @@ export function QuizCard({ id, title }: QuizCardProps) {
       <div className='flex items-center justify-between bg-[#6BA6FF] p-4 rounded-lg min-w-[700px] max-w-[800px] min-h-[200px] px-24'>
         <div className='flex flex-col text-white gap-4'>
           <h2 className='text-4xl font-bold'>{title}</h2>
-          <div className='flex gap-2'>
+
             {quizData[id - 1].letters.map((letter) => (
               <p key={letter} className='text-lg font-bold'>
                 {letter}
               </p>
-            ))}
-          </div>
-          <Link href={`/quiz/${id}`}>
-            <Button className='bg-feather-green drop-shadow-2xl hover:bg-feather-green/80'>
+          ))}
+        </div>
+        <Link href={`/quiz/${id}`}>
+          <Button className='bg-feather-green drop-shadow-2xl hover:bg-feather-green/80'>
               Start
             </Button>
           </Link>
         </div>
         <Image
+          className='rounded-lg'
           src='/chicken1.png'
           width={144}
           height={144}
           alt='Picture of chicken with thumbs up'
-        />
-      </div>
+      />
     </div>
   );
 }
