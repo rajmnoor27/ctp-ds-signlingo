@@ -36,13 +36,14 @@ export default function QuizPage({ params }: any) {
         <VideoStream />
       </div>
 
-      {/* Existing quiz content */}
-      <h1>{quizData[quizIndex].title}</h1>
-      <div className='flex gap-2'>
+      <div className='flex gap-4 justify-center'>
         {quizData[quizIndex].letters.map((letter) => (
-          <p key={letter} className='text-lg font-bold'>
-            {letter}
-          </p>
+          <div
+            key={letter}
+            className='w-16 h-16 flex items-center justify-center rounded-lg bg-white shadow-md hover:shadow-lg transition-shadow cursor-pointer border-2 border-blue-200'
+          >
+            <p className='text-2xl font-bold text-gray-700'>{letter}</p>
+          </div>
         ))}
       </div>
     </div>

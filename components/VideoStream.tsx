@@ -2,8 +2,50 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { HandLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
-import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 import { HAND_CONNECTIONS } from '@mediapipe/hands';
+
+const drawCustomLandmarks = (
+  ctx: CanvasRenderingContext2D,
+  landmarks: any[],
+  options: { color: string; radius: number }
+) => {
+  landmarks.forEach((landmark) => {
+    const x = (1 - landmark.x) * ctx.canvas.width;
+    const y = landmark.y * ctx.canvas.height;
+
+    ctx.beginPath();
+    ctx.fillStyle = options.color;
+    ctx.arc(x, y, options.radius, 0, 2 * Math.PI);
+    ctx.fill();
+  });
+};
+
+const drawCustomConnectors = (
+  ctx: CanvasRenderingContext2D,
+  landmarks: any[],
+  connections: number[][],
+  options: { color: string; lineWidth: number }
+) => {
+  ctx.strokeStyle = options.color;
+  ctx.lineWidth = options.lineWidth;
+
+  connections.forEach(([start, end]) => {
+    const startPoint = landmarks[start];
+    const endPoint = landmarks[end];
+
+    if (startPoint && endPoint) {
+      const startX = (1 - startPoint.x) * ctx.canvas.width;
+      const startY = startPoint.y * ctx.canvas.height;
+      const endX = (1 - endPoint.x) * ctx.canvas.width;
+      const endY = endPoint.y * ctx.canvas.height;
+
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(endX, endY);
+      ctx.stroke();
+    }
+  });
+};
 
 export default function VideoStream() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -72,42 +114,27 @@ export default function VideoStream() {
     const results = handLandmarker.detectForVideo(video, startTimeMs);
 
     if (results.landmarks && results.landmarks.length !== 0) {
-      console.log('Detection results:', results);
-      console.log('Landmark data:', results.landmarks);
+      // console.log('Detection results:', results);
+      // console.log('Landmark data:', results.landmarks);
     }
 
     ctx.save();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.scale(-1, 1);
-    ctx.translate(-canvas.width, 0);
-
     if (results.landmarks && results.landmarks.length > 0) {
-      console.log('Detection results:', results);
-      console.log('Landmark data:', results.landmarks);
-
       for (const landmarks of results.landmarks) {
-        landmarks.forEach((landmark: any) => {
-          const x = landmark.x * canvas.width;
-          const y = landmark.y * canvas.height;
-
-          ctx.beginPath();
-          ctx.fillStyle = '#FF0000';
-          ctx.arc(x, y, 5, 0, 2 * Math.PI);
-          ctx.fill();
-        });
-
-        drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {
+        drawCustomConnectors(ctx, landmarks, HAND_CONNECTIONS, {
           color: '#00FF00',
-          lineWidth: 5,
+          lineWidth: 2,
         });
-        drawLandmarks(ctx, landmarks, {
+
+        drawCustomLandmarks(ctx, landmarks, {
           color: '#FF0000',
-          lineWidth: 1,
-          radius: 5,
+          radius: 4,
         });
       }
     }
+
     ctx.restore();
 
     if (webcamRunning) {
@@ -146,7 +173,6 @@ export default function VideoStream() {
           width={640}
           height={480}
           className='absolute top-0 left-0'
-          // style={{ transform: 'rotateY(180deg)' }}
         />
       </div>
     </div>

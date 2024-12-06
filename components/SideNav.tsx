@@ -141,7 +141,7 @@ function PracticeIcon(props: any) {
           x2='27.0802'
           y2='20.0669'
           stroke='#AFAFAF'
-          stroke-width='3'
+          strokeWidth='3'
         />
         <rect
           x='19.9639'
@@ -308,7 +308,7 @@ function SettingsIcon(props: any) {
         r='19'
         fill='#CE82FF'
         stroke='#CE82FF'
-        stroke-width='2'
+        strokeWidth='2'
       />
       <circle cx='15' cy='23' r='2' fill='white' />
       <circle cx='23' cy='23' r='2' fill='white' />
