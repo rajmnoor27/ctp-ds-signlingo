@@ -113,15 +113,20 @@ export default function QuizPage({ params }: any) {
       setIsTransitioning(true);
       setHoldStartTime(null);
       setTimeRemaining(4);
-      await delay(TRANSITION_DELAY);
+
+      // Calculate next index
+      const nextIndex = currentLetterIndex + 1;
+      const isLastLetter = nextIndex >= currentQuiz.letters.length;
+
+      // Only delay if it's not the last letter
+      if (!isLastLetter) {
+        await delay(TRANSITION_DELAY);
+      }
 
       // Add current letter to completed set
       setCompletedLetters((prev) => new Set(prev).add(currentLetterIndex));
 
-      // Calculate next index
-      const nextIndex = currentLetterIndex + 1;
-
-      if (nextIndex < currentQuiz.letters.length) {
+      if (!isLastLetter) {
         // Update progress before changing letter
         const newProgress = (nextIndex / currentQuiz.letters.length) * 100;
         setProgress(newProgress);
