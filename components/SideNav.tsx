@@ -12,7 +12,7 @@ export default function SideNav() {
         {/* logo */}
         <Link className='flex items-center py-8 pl-4' href='/'>
           <h2 className='font-feather-bold text-4xl text-[#6BA6FF]'>
-            henlingo
+            signlingo
           </h2>
         </Link>
 
