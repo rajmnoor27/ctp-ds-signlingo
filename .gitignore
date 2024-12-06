@@ -90,3 +90,21 @@ pids
 *.pid
 *.seed
 *.pid.lock
+
+# Data directories
+/data
+/training/data
+/dataset
+/training/dataset
+
+# ML Model files and training artifacts
+/models
+/training/models
+*.pkl
+*.h5
+*.model
+*.pt
+*.pth
+*.onnx
+/checkpoints
+/training/checkpoints

@@ -33,9 +33,39 @@ SignLingo is an interactive American Sign Language (ASL) learning platform that 
 ### Prerequisites
 
 - Node.js 18+
-- Python 3.8+
+- Python 3.12.4 training
+- Python 3.11.0 backend
 - pip
 - npm or yarn
+
+### Training the Model
+
+1. Set up the Python environment:
+
+```bash
+cd training
+python -m venv venv
+source venv/bin/activate  # On Windows use: venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+2. Run the training pipeline in the following order:
+
+```bash
+# 1. Collect images for training
+python collect_imgs.py
+
+# 2. Create and preprocess the dataset
+python create_dataset.py
+
+# 3. Train the classifier
+python train_classifier.py
+
+# 4. Test the trained model
+python inference_classifier.py
+```
+
+Note: The training process will create a `/data` directory to store images and a `/models` directory for the trained models. These directories are gitignored.
 
 ### Installation
 

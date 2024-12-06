@@ -9,7 +9,7 @@ interface VideoStreamProps {
   onPrediction?: (prediction: string, confidence: number) => void;
 }
 
-const FRAME_RATE = 10; // Reduced from 10 for lower resource usage
+const FRAME_RATE = 60; // Reduced from 10 for lower resource usage
 const FRAME_INTERVAL = 1000 / FRAME_RATE;
 
 // Add video constraints for lower resolution

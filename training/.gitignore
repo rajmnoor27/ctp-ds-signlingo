@@ -1,0 +1,7 @@
+venv/
+
+data/*
+
+*.p
+
+*.pickle
