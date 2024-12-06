@@ -67,6 +67,63 @@ npm run dev
 
 4. Open your browser and navigate to `http://localhost:3000`
 
+## Deployment on Render
+
+This project is configured as a monorepo for deployment on Render.com. The `render.yaml` file in the root directory contains all necessary configuration for both frontend and backend services.
+
+### Deployment Steps
+
+1. Fork or clone this repository to your GitHub account
+
+2. Create a new account on [Render](https://render.com) if you haven't already
+
+3. In your Render dashboard:
+
+   - Click "New +"
+   - Select "Blueprint"
+   - Connect your GitHub account and select your SignLingo repository
+   - Click "Apply"
+
+4. Render will automatically:
+   - Detect the `render.yaml` configuration
+   - Create both frontend and backend services
+   - Deploy them with the specified settings
+
+### Environment Variables
+
+The following environment variables are automatically set in `render.yaml`:
+
+Frontend:
+
+- `NEXT_PUBLIC_API_URL`: URL of the backend API
+- `NEXT_PUBLIC_WS_URL`: WebSocket URL for real-time communication
+
+Backend:
+
+- `PORT`: Automatically set by Render
+- `PYTHON_VERSION`: Set to 3.8.0
+
+### Monorepo Configuration
+
+The project uses Render's Monorepo support with:
+
+1. Root Directory settings:
+
+   - Backend: `backend/`
+   - Frontend: `frontend/`
+
+2. Build Filters to trigger deployments only when relevant files change:
+   - Backend: Python files and requirements.txt
+   - Frontend: TypeScript, JavaScript, CSS, and package files
+
+### Deployment URLs
+
+After successful deployment, your services will be available at:
+
+- Frontend: `https://signlingo-frontend.onrender.com`
+- Backend: `https://signlingo-backend.onrender.com`
+- WebSocket: `wss://signlingo-backend.onrender.com/ws`
+
 ## Project Structure
 
 ```
