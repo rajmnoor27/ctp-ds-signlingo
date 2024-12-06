@@ -58,8 +58,10 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       clearTimeout(reconnectTimeoutRef.current);
     }
 
-    console.log('Creating new WebSocket connection...');
-    const ws = new WebSocket('ws://localhost:8000/ws');
+    // Get WebSocket URL from environment variable or fallback to localhost
+    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:10000/ws';
+    console.log('Creating new WebSocket connection to:', wsUrl);
+    const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
       console.log('WebSocket connected successfully');
@@ -100,8 +102,6 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     };
 
     wsRef.current = ws;
-    // Store WebSocket instance in a type-safe way
-    (window as any).ws = ws;
   };
 
   useEffect(() => {
