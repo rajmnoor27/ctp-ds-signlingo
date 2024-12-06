@@ -34,7 +34,10 @@ export default function QuizPage({ params }: any) {
     const updateHoldProgress = () => {
       if (holdStartTime && !isTransitioning) {
         const holdDuration = Date.now() - holdStartTime;
-        const remaining = Math.max(4 - holdDuration / 1000, 0);
+        const remaining = Math.max(
+          HOLD_TIME_REQUIRED / 1000 - holdDuration / 1000,
+          0
+        );
         setTimeRemaining(remaining);
 
         if (holdDuration >= HOLD_TIME_REQUIRED) {
@@ -143,11 +146,11 @@ export default function QuizPage({ params }: any) {
 
   return (
     <WebSocketProvider>
-      <div className='min-h-screen bg-gray-50 p-4 flex flex-col gap-4 items-center'>
+      <div className='min-h-screen bg-gray-50 p-4 flex flex-col items-center'>
         <h1 className='text-2xl font-bold'>{currentQuiz.title}</h1>
 
         {/* Top bar with settings, progress, and hearts */}
-        <div className='flex items-center gap-4 mb-6 w-[75%]'>
+        <div className='flex items-center gap-4 mb-2 w-[75%]'>
           <Settings className='w-6 h-6 text-gray-600' />
 
           <div className='flex-1'>
@@ -166,37 +169,39 @@ export default function QuizPage({ params }: any) {
         </div>
 
         {isCompleted ? (
-          <div className='text-center p-8 bg-white rounded-lg shadow-lg'>
-            <h2 className='text-4xl font-bold text-green-600 mb-6'>
-              Congratulations! 🎉
-            </h2>
-            <div className='flex gap-4 justify-center mb-8'>
-              {currentQuiz.letters.map((letter) => (
-                <div
-                  key={letter}
-                  className='w-12 h-12 flex items-center justify-center bg-green-100 rounded-lg border-2 border-green-500'
+          <div className='flex items-center justify-center min-h-[calc(100vh-200px)]'>
+            <div className='text-center p-8 bg-white rounded-lg shadow-lg'>
+              <h2 className='text-4xl font-bold text-green-600 mb-6'>
+                Congratulations! 🎉
+              </h2>
+              <div className='flex gap-4 justify-center mb-8'>
+                {currentQuiz.letters.map((letter) => (
+                  <div
+                    key={letter}
+                    className='w-12 h-12 flex items-center justify-center bg-green-100 rounded-lg border-2 border-green-500'
+                  >
+                    <p className='text-xl font-bold text-green-700'>{letter}</p>
+                  </div>
+                ))}
+              </div>
+              <p className='text-xl text-gray-700 mb-8'>
+                You've mastered all {currentQuiz.letters.length} letters in this
+                quiz!
+              </p>
+              <div className='flex gap-4 justify-center'>
+                <button
+                  onClick={() => window.location.reload()}
+                  className='px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors'
                 >
-                  <p className='text-xl font-bold text-green-700'>{letter}</p>
-                </div>
-              ))}
-            </div>
-            <p className='text-xl text-gray-700 mb-8'>
-              You've mastered all {currentQuiz.letters.length} letters in this
-              quiz!
-            </p>
-            <div className='flex gap-4 justify-center'>
-              <button
-                onClick={() => window.location.reload()}
-                className='px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors'
-              >
-                Try Again
-              </button>
-              <button
-                onClick={() => (window.location.href = '/quiz')}
-                className='px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors'
-              >
-                Next Quiz
-              </button>
+                  Try Again
+                </button>
+                <button
+                  onClick={() => (window.location.href = '/quiz')}
+                  className='px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors'
+                >
+                  Next Quiz
+                </button>
+              </div>
             </div>
           </div>
         ) : (
@@ -213,7 +218,7 @@ export default function QuizPage({ params }: any) {
                 {expectedLetter}
                 {holdStartTime && !isTransitioning && (
                   <div className='text-lg text-green-600 mt-2'>
-                    {timeRemaining.toFixed(1)}s
+                    {timeRemaining.toFixed(1)}s remaining
                   </div>
                 )}
               </div>

@@ -100,8 +100,8 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     };
 
     wsRef.current = ws;
-    // Make the WebSocket instance available globally for cleanup
-    window.ws = ws;
+    // Store WebSocket instance in a type-safe way
+    (window as any).ws = ws;
   };
 
   useEffect(() => {
