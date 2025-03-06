@@ -44,8 +44,6 @@ SignLingo is an interactive American Sign Language (ASL) learning platform that 
 
 ### Training the Model
 
-![ASL ABCD GIF](training/asl_abcd.gif)
-
 1. Set up the Python environment:
 
 ```bash
