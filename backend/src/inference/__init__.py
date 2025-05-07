@@ -1,3 +1,0 @@
-"""
-SignLingo ASL Inference Module
-""" 

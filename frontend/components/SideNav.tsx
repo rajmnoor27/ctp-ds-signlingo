@@ -17,11 +17,10 @@ export default function SideNav() {
           {/* home */}
           <Link href='/lesson'>
             <li
-              className={`flex rounded-[12px] px-2 py-1 min-h-[40px] ${
-                pathname === '/lesson'
-                  ? 'bg-iguana border-blue-jay text-macaw border-2'
-                  : 'text-wolf hover:bg-hover'
-              }`}
+              className={`flex rounded-[12px] px-2 py-1 min-h-[40px] ${pathname === '/lesson'
+                ? 'bg-iguana border-blue-jay text-macaw border-2'
+                : 'text-wolf hover:bg-hover'
+                }`}
             >
               <div className='flex mr-[20px] w-[36px] h-[36px]'>
                 <HomeIcon className='pl-[6px] w-[36px] h-[36px]' />
@@ -34,11 +33,10 @@ export default function SideNav() {
           {/* practice */}
           <Link href='/quiz'>
             <li
-              className={`flex rounded-[12px] px-2 py-1 min-h-[40px] ${
-                pathname === '/quiz'
-                  ? 'bg-iguana border-blue-jay text-macaw border-2'
-                  : 'text-wolf hover:bg-hover'
-              }`}
+              className={`flex rounded-[12px] px-2 py-1 min-h-[40px] ${pathname === '/quiz'
+                ? 'bg-iguana border-blue-jay text-macaw border-2'
+                : 'text-wolf hover:bg-hover'
+                }`}
             >
               <div className='flex mr-[20px] w-[36px] h-[36px]'>
                 <PracticeIcon className='pl-[6px] w-[36px] h-[36px]' />
@@ -48,15 +46,22 @@ export default function SideNav() {
               </span>
             </li>
           </Link>
-          {/* Leaderboard - Disabled */}
-          <li className='flex rounded-[12px] text-wolf px-2 py-1 min-h-[40px] opacity-50 cursor-not-allowed'>
-            <div className='flex mr-[20px] w-[36px] h-[36px]'>
-              <LeaderboardIcon className='pl-[6px] w-[36px] h-[36px]' />
-            </div>
-            <span className='flex items-center font-din-rounded font-bold text-[15px] tracking-[0.8px]'>
-              LEADERBOARD
-            </span>
-          </li>
+          {/* Leaderboard - Now Clickable */}
+          <Link href='/leaderboard'>
+            <li
+              className={`flex rounded-[12px] px-2 py-1 min-h-[40px] ${pathname === '/leaderboard'
+                ? 'bg-iguana border-blue-jay text-macaw border-2'
+                : 'text-wolf hover:bg-hover'
+                }`}
+            >
+              <div className='flex mr-[20px] w-[36px] h-[36px]'>
+                <LeaderboardIcon className='pl-[6px] w-[36px] h-[36px]' />
+              </div>
+              <span className='flex items-center font-din-rounded font-bold text-[15px] tracking-[0.8px]'>
+                LEADERBOARD
+              </span>
+            </li>
+          </Link>
           {/* Shop - Disabled */}
           <li className='flex rounded-[12px] text-wolf px-2 py-1 min-h-[40px] opacity-50 cursor-not-allowed'>
             <div className='flex mr-[20px] w-[36px] h-[36px]'>
@@ -66,15 +71,22 @@ export default function SideNav() {
               SHOP
             </span>
           </li>
-          {/* Settings - Disabled */}
-          <li className='flex rounded-[12px] text-wolf px-2 py-1 min-h-[40px] opacity-50 cursor-not-allowed'>
-            <div className='flex mr-[20px] w-[36px] h-[36px]'>
-              <SettingsIcon className='pl-[6px] w-[36px] h-[36px]' />
-            </div>
-            <span className='flex items-center font-din-rounded font-bold text-[15px] tracking-[0.8px]'>
-              PROFILE
-            </span>
-          </li>
+          {/* Profile - Now Clickable */}
+          <Link href='/profile'>
+            <li
+              className={`flex rounded-[12px] px-2 py-1 min-h-[40px] ${pathname === '/profile'
+                  ? 'bg-iguana border-blue-jay text-macaw border-2'
+                  : 'text-wolf hover:bg-hover'
+                }`}
+            >
+              <div className='flex mr-[20px] w-[36px] h-[36px]'>
+                <SettingsIcon className='pl-[6px] w-[36px] h-[36px]' />
+              </div>
+              <span className='flex items-center font-din-rounded font-bold text-[15px] tracking-[0.8px]'>
+                PROFILE
+              </span>
+            </li>
+          </Link>
         </ul>
       </nav>
     </div>
